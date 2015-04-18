@@ -24,8 +24,7 @@
 package persistencia;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
+
 
 /*
  * Esta clase implementa métodos para acceder a la base de datos de MySql de miniIMDB.
@@ -38,9 +37,9 @@ public class CuentaPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://wallapet.com:3306/wallapet";
-	private final String USERNAME = "piraces";
-	private final String PASSWORD = "22wallapet22";
+	private final String DRIVER = "jdbc:mysql://wallapet.com:3306/<BD>";
+	private final String USERNAME = "<USER>";
+	private final String PASSWORD = "<PASSWORD>";
 	
 	/**
 	 * Pre: Cierto

@@ -39,9 +39,9 @@ public class AnuncioPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://wallapet.com:3306/wallapet";
-	private final String USERNAME = "piraces";
-	private final String PASSWORD = "22wallapet22";
+	private final String DRIVER = "jdbc:mysql://wallapet.com:3306/<BD>";
+	private final String USERNAME = "<USER>";
+	private final String PASSWORD = "<PASSWORD>";
 
 	// Constructor
 	public AnuncioPersistencia() {
@@ -72,15 +72,16 @@ public class AnuncioPersistencia {
 		Statement stmt = connection.createStatement();
 		
 		// Insertar en la base de datos.
-		stmt.executeUpdate("INSERT INTO anuncio "
-				+ "(email,estado,descripcion,tipoIntercambio,especie,precio,titulo)"
-				+ " VALUES"
+		stmt.executeUpdate("INSERT INTO anuncio"
+				+ "(email,estado,descripcion,tipoIntercambio,especie,precio,rutaImagen,titulo)"
+				+ " VALUES "
 				+ "('" + a.getEmail() + "','"
 				+ a.getEstado() + "','"
 				+ a.getDescripcion() + "','"
 				+ a.getTipoIntercambio() + "','"
 				+ a.getEspecie() + "',"
 				+ a.getPrecio() + ",'"
+				+ a.getRutaImagen() + "','"
 				+ a.getTitulo() + "')");
 
 		// Cerramos conexion.
@@ -235,7 +236,7 @@ public class AnuncioPersistencia {
 	 *       devuelve true. En caso de que no pueda actualizarse devuelve false.
 	 */
 	public boolean updateAnuncio(int idAnuncio,String email,String estado, String especie,
-		String descripcion, String tipoIntercambio,String titulo, double precio){
+		String descripcion, String tipoIntercambio,String titulo, double precio, String ruta){
 
 		// Crear conexion
 		try {
@@ -256,6 +257,7 @@ public class AnuncioPersistencia {
 						+ "especie=" + "'" + especie+"'," 
 						+ "precio=" + precio + ",titulo=" + "'" + titulo + "',"
 						+ "descripcion=" + "'" + descripcion + "'"
+						+ "rutaImagen=" + "'" + ruta + "'"
 						+ " WHERE idAnuncio=" + idAnuncio + ";");
 				
 				// En caso de modificacion correcta devuelve true.

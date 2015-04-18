@@ -1,10 +1,10 @@
 /*
- * Nombre: BorrarAnuncio.java
+ * Nombre: BuscarAnuncios.java
  * Version: 0.1
- * Autor: Luis Pellicer.
+ * Autor: Ismael Rodriguez.
  * Fecha 3-4-2015
  * Descripcion: Este fichero implementa el servlet del servidor que se encarga
- *              de procesar peticiones Post para borrar anuncios.
+ *              de procesar peticiones Post para buscar un anuncio.
  * Copyright (C) 2015 Hyena Technologies
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,58 +24,49 @@ package servicios;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import persistencia.Anuncio;
 import persistencia.AnuncioPersistencia;
 
 /**
- * Servlet implementation class BorrarAnuncio
+ * Servlet implementation class VerAnuncio
  */
-@WebServlet("/BorrarAnuncio")
-public class BorrarAnuncio extends HttpServlet {
+@WebServlet("/verAnuncio.do")
+public class VerAnuncio extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    
+
 	/**
-	 * El GET no debe hacer nada.
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
-		out.println("ERROR: USA POST PARA BORRAR UN ANUNCIO");
-		response.setStatus(500);
-	}
-	
-	/**
-	 * Pre: BorrarAnuncio funciona con POST.
-	 *      POST /BorrarAnuncio.do?anuncio=" 'contenido Json"
+	 * Pre: VerAnuncio funciona con GET.
+	 *      GET /verAnuncio.do?id=ID_ANUNCIO
 	 *      Ver documentacion para mas detalle.
-	 * Post: Borra el anuncio o informa del error.
+	 * Post: 
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+
 		PrintWriter out = response.getWriter();
 		try {
-			
-			// Comprar si la peticion es correcta.
+
 			String idParameter = request.getParameter("id");
 			if (idParameter == null || idParameter == "") {
 				out.println("ERROR: PARAMETRO ID PASADO DE FORMA INCORRECTA");
 				response.setStatus(500);
 
 			} else {
-				
 				int id = Integer.parseInt(idParameter);
 				
 				// Obtenemos el anuncio de la base de datos
 				AnuncioPersistencia persistencia = new AnuncioPersistencia();
-				
-				if(persistencia.deleteAnuncio(id)){
+				Anuncio result = persistencia.getAnuncio(id);
+				if(result!=null){
 					
 					//Existe el anuncio
+					String json = Anuncio.toJson(result);
+					out.println(json);
 					response.setStatus(200);
 				}
 				else{
@@ -93,4 +84,13 @@ public class BorrarAnuncio extends HttpServlet {
 
 	}
 
+	/**
+	 * El POST no debe hacer nada.
+	 */
+	protected void doPost(HttpServletRequest request,
+		HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+		out.println("ERROR: USA GET PARA OBTENER UN ANUNCIO");
+		response.setStatus(500);
+	}
 }

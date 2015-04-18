@@ -1,10 +1,10 @@
 /*
- * Nombre: CrearAnuncio.java
+ * Nombre: RegistrarUsuario.java
  * Version: 0.1
  * Autor: Ismael Rodriguez.
  * Fecha 3-4-2015
  * Descripcion: Este fichero implementa el servlet del servidor que se encarga
- *              de procesar peticiones Post para crear anuncios.
+ *              de procesar peticiones Post para registrar un usuario.
  * Copyright (C) 2015 Hyena Technologies
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,50 +29,58 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import persistencia.Anuncio;
-import persistencia.AnuncioPersistencia;
+import persistencia.Cuenta;
+import persistencia.CuentaPersistencia;
+import persistencia.Utiles;
+
 /**
- * Servlet implementation class CrearEvento
+ * Servlet implementation class RegistrarUsuario
  */
-@WebServlet("/crearAnuncio.do")
-public class CrearAnuncio extends HttpServlet {
+@WebServlet("/registrarUsuario.do")
+public class RegistrarUsuario extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    
 	/**
 	 * El GET no debe hacer nada.
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
-		out.println("ERROR: USA POST PARA INTRODUCIR UN ANUNCIO");
+		out.println("ERROR: USA POST PARA REGISTRAR UN USUARIO");
 		response.setStatus(500);
 	}
-
+	
 	/**
-	 * CrearAnuncio funciona con POST.
-	 * POST /crearAnuncio.do.
-	 * Ver documentacion
+	 * Pre: BuscarAnuncios funciona con POST.
+	 *      POST /RegistrarUsuario.do?usuario=" 'contenido Json"
+	 *      Ver documentacion para mas detalle.
+	 * Post: registra un usuario o devuelve error.
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
 		
 		//He recibido un anuncio en formato JSON
-		String anuncioJson = request.getParameter("anuncio");
+		String anuncioJson = request.getParameter("usuario");
 		try{
-			Anuncio received = Anuncio.fromJson(anuncioJson);
-			AnuncioPersistencia persistencia = new AnuncioPersistencia();
+			Cuenta received = Cuenta.fromJson(anuncioJson);
+			CuentaPersistencia persistencia = new CuentaPersistencia();
+			
+			//Guardaremos la contrasena como hash
+			received.setContrasegna(Utiles.generateHash(received.getContrasegna()));
 			
 			//Creamos el anuncio
-			persistencia.createAnuncio(received);
+			persistencia.createCuenta(received);
 			
 			//Respondemos
-			out.println("OK ANUNCIO CREADO");
-			response.setStatus(200);	
+			out.println("OK CUENTA CREADA");
+			response.setStatus(200);		
 		}catch(Exception ex){
-			//Ha habido una excepción
+			
+			//Ha habido una excepcion
 			ex.printStackTrace();
 			out.println("SERVER ERROR");
-			response.setStatus(500); //Server error
+			
+			//Server error
+			response.setStatus(500); 
 		}	
 	}
 }

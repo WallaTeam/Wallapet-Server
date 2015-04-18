@@ -1,10 +1,10 @@
 /*
- * Nombre: RegistrarUsuario.java
+ * Nombre: ActualizarAnuncio.java
  * Version: 0.1
- * Autor: Ismael Rodriguez.
+ * Autor: Luis Pellicer.
  * Fecha 3-4-2015
  * Descripcion: Este fichero implementa el servlet del servidor que se encarga
- *              de procesar peticiones Post para registrar un usuario.
+ *              de procesar peticiones Post para modificar anuncios.
  * Copyright (C) 2015 Hyena Technologies
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,58 +31,67 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import persistencia.Anuncio;
 import persistencia.AnuncioPersistencia;
-import persistencia.Cuenta;
-import persistencia.CuentaPersistencia;
-import persistencia.Utiles;
 
 /**
- * Servlet implementation class RegistrarUsuario
+ * Servlet implementation class ActualizarAnuncio
  */
-@WebServlet("/registrarUsuario.do")
-public class RegistrarUsuario extends HttpServlet {
+@WebServlet("/ActualizarAnuncio")
+public class ActualizarAnuncio extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
 	/**
 	 * El GET no debe hacer nada.
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
-		out.println("ERROR: USA POST PARA REGISTRAR UN USUARIO");
+		out.println("ERROR: USA POST PARA ACTUALIZAR UN ANUNCIO");
 		response.setStatus(500);
 	}
 	
 	/**
-	 * Pre: BuscarAnuncios funciona con POST.
-	 *      POST /RegistrarUsuario.do?usuario=" 'contenido Json"
+	 * Pre: ActualizarAnuncio funciona con POST.
+	 *      POST /ActualizarAnuncio.do?anuncio=" 'contenido Json"
 	 *      Ver documentacion para mas detalle.
-	 * Post: registra un usuario o devuelve error.
+	 * Post: Actualiza el anuncio o informa del error.
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		
-		//He recibido un anuncio en formato JSON
-		String anuncioJson = request.getParameter("usuario");
+		PrintWriter out = response.getWriter();
+		String anuncioJson = request.getParameter("anuncio");
 		try{
-			Cuenta received = Cuenta.fromJson(anuncioJson);
-			CuentaPersistencia persistencia = new CuentaPersistencia();
+			Anuncio received = Anuncio.fromJson(anuncioJson);
+			AnuncioPersistencia persistencia = new AnuncioPersistencia();
 			
-			//Guardaremos la contrasena como hash
-			received.setContrasegna(Utiles.generateHash(received.getContrasegna()));
-			
-			//Creamos el anuncio
-			persistencia.createCuenta(received);
-			
-			//Respondemos
-			out.println("OK CUENTA CREADA");
-			response.setStatus(200);		
+			// Comprobar errores.
+			if(persistencia.getAnuncio(received.getIdAnuncio()) != null){
+				if(persistencia.updateAnuncio(received.getIdAnuncio(),
+						received.getEmail(), received.getEstado(),
+						received.getEspecie(), received.getDescripcion(),
+						received.getTipoIntercambio(), received.getTitulo(),
+						received.getPrecio(), received.getRutaImagen())){
+					
+					// Respuesta al cliente.
+					out.println("OK ANUNCIO MODIFICADO");
+					response.setStatus(200);
+				}
+				else{
+					out.println("ERROR, id anuncio erroneo");
+					response.setStatus(500);
+				}
+				
+			}
+			else{
+				out.println("ERROR, id anuncio erroneo");
+				response.setStatus(500);
+				
+			}
 		}catch(Exception ex){
 			
-			//Ha habido una excepcion
+			//Ha habido una excepcion. Server error.
 			ex.printStackTrace();
 			out.println("SERVER ERROR");
-			
-			//Server error
 			response.setStatus(500); 
-		}	
+		}
 	}
 }
