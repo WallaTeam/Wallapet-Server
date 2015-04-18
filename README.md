@@ -5,7 +5,7 @@ Servidor basado en JSP para interactuar con la aplicación Wallapet (android).
 You can check our official site in http://wallapet.com.
 Also yo can view our repository pages in http://piraces.github.io/Wallapet.
 
-# Dependences
+# Dependencies
 The wallapet-server uses the following libraries to work succesfully:
 - antlr-2.7.6
 - asm
