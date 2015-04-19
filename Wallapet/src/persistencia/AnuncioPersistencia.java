@@ -256,7 +256,7 @@ public class AnuncioPersistencia {
 						+ "tipoIntercambio="+"'"+tipoIntercambio + "',"
 						+ "especie=" + "'" + especie+"'," 
 						+ "precio=" + precio + ",titulo=" + "'" + titulo + "',"
-						+ "descripcion=" + "'" + descripcion + "'"
+						+ "descripcion=" + "'" + descripcion + "',"
 						+ "rutaImagen=" + "'" + ruta + "'"
 						+ " WHERE idAnuncio=" + idAnuncio + ";");
 				
