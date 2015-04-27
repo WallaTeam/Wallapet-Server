@@ -195,7 +195,7 @@ public class AnuncioPersistencia {
 				+ opciones);
 		
 		//  Lista de anuncios que coinciden con las caracteristicas de la busqueda.
-		List<Anuncio> anuncios = new ArrayList<>();
+		List<Anuncio> anuncios = new ArrayList<Anuncio>();
 		while (rs.next()) {
 			
 			/*
