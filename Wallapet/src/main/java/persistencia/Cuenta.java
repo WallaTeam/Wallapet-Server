@@ -34,7 +34,7 @@ public class Cuenta {
 	private String email;
 	private int telefono;
 	private String contrasegna;
-	
+	private String usuario;
 	/**
 	 * Pre: Cierto.
 	 * Post: Devueve la conversion de c en un JSON.
@@ -44,6 +44,8 @@ public class Cuenta {
 		Gson gson = new Gson();
 		return gson.toJson(c);
 	}
+
+
 	
 	/**
 	 * Pre: Cierto.
@@ -126,6 +128,8 @@ public class Cuenta {
 	public String getDireccion() {
 		return direccion;
 	}
+
+	public String getUsuario(){ return usuario;}
 	
 	/**
 	 * Pre: Cierto.
@@ -166,4 +170,11 @@ public class Cuenta {
 	public void setTelefono(int telefono) {
 		this.telefono = telefono;
 	}
+
+	/**
+	 * Pre: Cierto.
+	 * Post: this.usuario = usuario
+	 */
+	public void setUsuario(String usuario) { this.usuario = usuario;}
 }
+

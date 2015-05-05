@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import persistencia.Cuenta;
 import persistencia.CuentaPersistencia;
+import persistencia.RespuestaRegistro;
 import persistencia.Utiles;
 
 /**
@@ -50,7 +51,7 @@ public class RegistrarUsuario extends HttpServlet {
 	}
 	
 	/**
-	 * Pre: BuscarAnuncios funciona con POST.
+	 * Pre: RegistrarUsuario funciona con POST.
 	 *      POST /RegistrarUsuario.do?usuario=" 'contenido Json"
 	 *      Ver documentacion para mas detalle.
 	 * Post: registra un usuario o devuelve error.
@@ -66,12 +67,22 @@ public class RegistrarUsuario extends HttpServlet {
 			
 			//Guardaremos la contrasena como hash
 			received.setContrasegna(Utiles.generateHash(received.getContrasegna()));
-			
-			//Creamos el anuncio
-			persistencia.createCuenta(received);
-			
-			//Respondemos
-			out.println("OK CUENTA CREADA");
+
+			if(persistencia.existsCuenta(received.getEmail(),received.getDNI())){
+				RespuestaRegistro rr = new RespuestaRegistro();
+				rr.setRespuestaRegistro("mail_o_DNI_repetido");
+
+				out.println(RespuestaRegistro.toJson(rr));
+			}
+			else{
+				//Creamos la cuenta
+				persistencia.createCuenta(received);
+				RespuestaRegistro rr = new RespuestaRegistro();
+				rr.setRespuestaRegistro("mail_o_DNI_repetido");
+
+				out.println(RespuestaRegistro.toJson(rr));
+			}
+
 			response.setStatus(200);		
 		}catch(Exception ex){
 			

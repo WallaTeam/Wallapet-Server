@@ -30,8 +30,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import persistencia.AnuncioPersistencia;
+import persistencia.Cuenta;
 
 /**
  * Servlet implementation class BorrarAnuncio
@@ -57,6 +59,14 @@ public class BorrarAnuncio extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
+
+		HttpSession s = request.getSession();
+		Cuenta logueado = (Cuenta) s.getAttribute("usuario");
+		if(logueado==null){
+			out.println("Usuario no logueado");
+			response.setStatus(405);
+			return;
+		}
 		try {
 			
 			// Comprar si la peticion es correcta.

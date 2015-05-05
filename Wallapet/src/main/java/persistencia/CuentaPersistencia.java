@@ -37,9 +37,9 @@ public class CuentaPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://wallapet.com:3306/*******";
-	private final String USERNAME = "*******";
-	private final String PASSWORD = "*******";
+	private final String DRIVER = "jdbc:mysql://******:3306/wallapet";
+	private final String USERNAME = "*";
+	private final String PASSWORD = "*";
 	
 	/**
 	 * Pre: Cierto
@@ -62,6 +62,27 @@ public class CuentaPersistencia {
 	}
 
 	/**
+	 * Pre: email!=null y DNI !=null
+	 * Post: Devuelve cierto si y solo si existe una cuenta con el email indicado o con el DNI incidado.
+	 * En caso contrario devuelve "false"
+	 */
+	public boolean existsCuenta(String email, String DNI) throws SQLException{
+		Connection connection = DriverManager.getConnection(db_driver,
+				db_username, db_password);
+		Statement stmt = connection.createStatement();
+		// Ejecutamos consulta.
+		ResultSet rs = stmt
+				.executeQuery("SELECT * FROM cuenta WHERE email=\"" + email
+						+ "\" OR DNI=\"" + DNI + "\"");
+
+		boolean exists = rs.next();
+		stmt.close();
+		connection.close();
+		return exists;
+
+	}
+
+	/**
 	 * Pre: cuenta != null
 	 * Post: Inserta en la base de datos una cuenta nueva. En caso de no poder
 	 *       crearla lanza una excepcion SQL.
@@ -74,12 +95,61 @@ public class CuentaPersistencia {
 		
 		// Conversion de formato booleano a numerico
 		
-		stmt.executeUpdate("INSERT INTO cuenta (DNI,nombre,apellidos,direccion,email,telefono,contrasegna)" +
-		  " VALUES ('" + cuenta.getDNI() + "','" + cuenta.getNombre() + "','" + cuenta.getApellido() +
+		stmt.executeUpdate("INSERT INTO cuenta (usuario,DNI,nombre,apellidos,direccion,email,telefono,contrasegna)" +
+		  " VALUES ('" + cuenta.getUsuario() + "','" + cuenta.getDNI() + "','" + cuenta.getNombre() + "','" + cuenta.getApellido() +
 		  "','" + cuenta.getDireccion() + "','" + cuenta.getEmail() + "'," + cuenta.getTelefono() + ",'" + cuenta.getContrasegna() + "')");
 
 		// Cerramos conexion
 		stmt.close();
 		connection.close();
+	}
+
+	/**
+	 * Si esta bien logueado devuelve objeto Cuenta.
+	 * Si no, devuelve null.
+	 * @return
+	 * @throws SQLException
+	 */
+	public Cuenta loginCuenta(DatosLogin dl) throws SQLException{
+
+		Connection connection = DriverManager.getConnection(db_driver,
+				db_username, db_password);
+		Statement stmt = connection.createStatement();
+		// Ejecutamos consulta.
+		ResultSet rs = stmt
+				.executeQuery("SELECT * FROM cuenta WHERE email=\"" +dl.getMail()+ "\"");
+		if(rs.next()){
+			String DNI = rs.getString("DNI");
+			String apellidos = rs.getString("apellidos");
+			String nombre = rs.getString("nombre");
+			String direccion = rs.getString("direccion");
+			int telefono = rs.getInt("telefono");
+			String usuario = rs.getString("usuario");
+			String retrievedPass = rs.getString("contrasegna");
+
+			if(dl.getPass().equals(retrievedPass)){
+			Cuenta c = new Cuenta();
+				c.setDNI(DNI);
+				c.setApellido(apellidos);
+				c.setNombre(nombre);
+				c.setDireccion(direccion);
+				c.setEmail(dl.getMail());
+				c.setTelefono(telefono);
+				c.setUsuario(usuario);
+				c.setContrasegna(retrievedPass);
+				return c;
+			}
+			else{
+				return null;
+			}
+
+		}
+		else{
+			//No hay usuario con dicho mail
+			return null;
+		}
+
+
+
 	}
 }
