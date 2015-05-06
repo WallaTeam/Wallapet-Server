@@ -74,7 +74,7 @@ public class BuscarAnuncios extends HttpServlet {
 		String tipoAnuncio = request.getParameter("tipoAnuncio");
 		String especie = request.getParameter("especie");
 		String palabrasClave = request.getParameter("palabrasClave");
-        System.out.println("Peticion de busqueda: tipo" + tipoAnuncio + ", especie " + especie + ", palabrasclave =" + palabrasClave);
+
 		
 		if(tipoAnuncio==null){
 			tipoAnuncio="";
@@ -85,7 +85,8 @@ public class BuscarAnuncios extends HttpServlet {
 		if(palabrasClave==null){
 			palabrasClave="";
 		}
-		
+
+		System.out.println("Peticion de busqueda: tipo " + tipoAnuncio + ", especie " + especie + ", palabrasclave =" + palabrasClave);
 		/* Llamada a la base de datos, pero pasandole tal vez estas variables. 
 		 * Se pasan vacias si quiere
 		 * omitirse.

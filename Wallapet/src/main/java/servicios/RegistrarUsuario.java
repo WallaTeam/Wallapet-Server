@@ -68,9 +68,9 @@ public class RegistrarUsuario extends HttpServlet {
 			//Guardaremos la contrasena como hash
 			received.setContrasegna(Utiles.generateHash(received.getContrasegna()));
 
-			if(persistencia.existsCuenta(received.getEmail(),received.getDNI())){
+			if(persistencia.existsCuenta(received.getEmail(),received.getDNI(),received.getUsuario())){
 				RespuestaRegistro rr = new RespuestaRegistro();
-				rr.setRespuestaRegistro("mail_o_DNI_repetido");
+				rr.setRespuestaRegistro("mail_o_DNI_o_nick_repetido");
 
 				out.println(RespuestaRegistro.toJson(rr));
 			}
@@ -78,7 +78,7 @@ public class RegistrarUsuario extends HttpServlet {
 				//Creamos la cuenta
 				persistencia.createCuenta(received);
 				RespuestaRegistro rr = new RespuestaRegistro();
-				rr.setRespuestaRegistro("mail_o_DNI_repetido");
+				rr.setRespuestaRegistro("OK");
 
 				out.println(RespuestaRegistro.toJson(rr));
 			}

@@ -1,10 +1,10 @@
 /*
- * Nombre: ActualizarAnuncio.java
+ * Nombre: BorrarAnuncio.java
  * Version: 0.1
  * Autor: Luis Pellicer.
  * Fecha 3-4-2015
  * Descripcion: Este fichero implementa el servlet del servidor que se encarga
- *              de procesar peticiones Post para modificar anuncios.
+ *              de procesar peticiones Post para borrar anuncios.
  * Copyright (C) 2015 Hyena Technologies
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,45 +22,42 @@
  */
 package servicios;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import persistencia.Anuncio;
+import persistencia.AnuncioPersistencia;
+import persistencia.Cuenta;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import persistencia.Anuncio;
-import persistencia.AnuncioPersistencia;
-import persistencia.Cuenta;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
- * Servlet implementation class ActualizarAnuncio
+ * Servlet implementation class BorrarAnuncio
  */
-@WebServlet("/ActualizarAnuncio")
-public class ActualizarAnuncio extends HttpServlet {
+@WebServlet("/cerrarAnuncio.do")
+public class CerrarAnuncio extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+    
 	/**
 	 * El GET no debe hacer nada.
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
-		out.println("ERROR: USA POST PARA ACTUALIZAR UN ANUNCIO");
+		out.println("ERROR: USA POST PARA CERRAR UN ANUNCIO");
 		response.setStatus(500);
 	}
 	
 	/**
-	 * Pre: ActualizarAnuncio funciona con POST.
-	 *      POST /ActualizarAnuncio.do?anuncio=" 'contenido Json"
+	 * Pre: BorrarAnuncio funciona con POST.
+	 *      POST /BorrarAnuncio.do?anuncio=" 'contenido Json"
 	 *      Ver documentacion para mas detalle.
-	 * Post: Actualiza el anuncio o informa del error.
+	 * Post: Borra el anuncio o informa del error.
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
 
 		HttpSession s = request.getSession();
@@ -70,41 +67,47 @@ public class ActualizarAnuncio extends HttpServlet {
 			response.setStatus(405);
 			return;
 		}
-		String anuncioJson = request.getParameter("anuncio");
-		System.out.println("Peticion de actualizar sobre " + anuncioJson);
-		try{
-			Anuncio received = Anuncio.fromJson(anuncioJson);
-			AnuncioPersistencia persistencia = new AnuncioPersistencia();
+		try {
 			
-			// Comprobar errores.
-			if(persistencia.getAnuncio(received.getIdAnuncio()) != null){
-				if(persistencia.updateAnuncio(received.getIdAnuncio(),
+			// Comprar si la peticion es correcta.
+			String idParameter = request.getParameter("id");
+			if (idParameter == null || idParameter == "") {
+				out.println("ERROR: PARAMETRO ID PASADO DE FORMA INCORRECTA");
+				response.setStatus(500);
 
-						received.getEspecie(), received.getDescripcion(),
-						received.getTipoIntercambio(), received.getTitulo(),
-						received.getPrecio(), received.getRutaImagen())){
-					
-					// Respuesta al cliente.
-					out.println("OK ANUNCIO MODIFICADO");
+			} else {
+				
+				int id = Integer.parseInt(idParameter);
+				
+				// Obtenemos el anuncio de la base de datos
+				AnuncioPersistencia persistencia = new AnuncioPersistencia();
+
+				Anuncio a =persistencia.getAnuncio(id);
+				if(a==null) {
+					//No existe el anuncio a cerrar
+					out.println("No existe el anuncio a cerrar");
+					response.setStatus(404);
+				}
+				else if(logueado.getEmail().equalsIgnoreCase(a.getEmail())){
+					//Es su anuncio, puede cerrarlo
+					persistencia.cerrarAnuncio(id);
+					out.println("OK - Cerrado");
 					response.setStatus(200);
 				}
 				else{
-					out.println("ERROR, id anuncio erroneo");
-					response.setStatus(500);
+					//Error de permisos
+					out.println("Error de permisos");
+					response.setStatus(403);
+
 				}
+
 				
 			}
-			else{
-				out.println("ERROR, id anuncio erroneo");
-				response.setStatus(500);
-				
-			}
-		}catch(Exception ex){
-			
-			//Ha habido una excepcion. Server error.
-			ex.printStackTrace();
-			out.println("SERVER ERROR");
-			response.setStatus(500); 
+		} catch (Exception ex) {
+			out.println("ERROR: SERVER ERROR");
+			response.setStatus(500);
 		}
+
 	}
+
 }

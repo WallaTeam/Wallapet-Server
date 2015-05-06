@@ -35,12 +35,12 @@ public class CuentaPersistencia {
 	private String db_driver;
 	private String db_username;
 	private String db_password;
-	
+
+
 	// Datos del servidor
 	private final String DRIVER = "jdbc:mysql://******:3306/wallapet";
-	private final String USERNAME = "*";
-	private final String PASSWORD = "*";
-	
+	private final String USERNAME = "***";
+	private final String PASSWORD = "***";
 	/**
 	 * Pre: Cierto
 	 * Post: Construye con los atributos definidos un objeto que permite 
@@ -61,19 +61,38 @@ public class CuentaPersistencia {
 		}
 	}
 
+
+	/**
+	 * Borra una cuenta y todos los anuncios que ha creado dicha cuenta
+	 */
+	public void borrarCuenta(String email) throws SQLException{
+		Connection connection = DriverManager.getConnection(db_driver,
+				db_username, db_password);
+		Statement stmt = connection.createStatement();
+
+		// Conversion de formato booleano a numerico
+		String sql_1 = "DELETE FROM anuncio WHERE email = '" + email + "'";
+		String sql_2 = "DELETE FROM cuenta WHERE email = '" + email + "'";
+
+		stmt.executeUpdate(sql_1);
+		stmt.executeUpdate(sql_2);
+		// Cerramos conexion
+		stmt.close();
+		connection.close();
+	}
 	/**
 	 * Pre: email!=null y DNI !=null
 	 * Post: Devuelve cierto si y solo si existe una cuenta con el email indicado o con el DNI incidado.
 	 * En caso contrario devuelve "false"
 	 */
-	public boolean existsCuenta(String email, String DNI) throws SQLException{
+	public boolean existsCuenta(String email, String DNI, String usuario) throws SQLException{
 		Connection connection = DriverManager.getConnection(db_driver,
 				db_username, db_password);
 		Statement stmt = connection.createStatement();
 		// Ejecutamos consulta.
 		ResultSet rs = stmt
 				.executeQuery("SELECT * FROM cuenta WHERE email=\"" + email
-						+ "\" OR DNI=\"" + DNI + "\"");
+						+ "\" OR DNI=\"" + DNI + "\" OR usuario=\"" + usuario + "\"");
 
 		boolean exists = rs.next();
 		stmt.close();
@@ -140,12 +159,16 @@ public class CuentaPersistencia {
 				return c;
 			}
 			else{
+				stmt.close();
+				connection.close();
 				return null;
 			}
 
 		}
 		else{
 			//No hay usuario con dicho mail
+			stmt.close();
+			connection.close();
 			return null;
 		}
 
