@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Utiles {
 
-	/* Genera un Hash para la contrasegna pasada.
+	/* Genera un Hashpara la contrasegna pasada.
 	 * Fuente del metodo:  http://viralpatel.net/blogs/java-md5-hashing-salting-password/
 	 */
 	public static String generateHash(String input) {
