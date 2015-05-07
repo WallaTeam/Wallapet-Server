@@ -4,21 +4,9 @@
  * Autor: Luis Pellicer.
  * Fecha 3-4-2015
  * Descripcion: Este fichero implementa la comunicacion 
- *              con la base de datos de la aplicacion.
+ *              con la base de datos de la aplicacion en lo que respecta
+ *              a Anuncio.
  * Copyright (C) 2015 Hyena Technologies
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package persistencia;
 
@@ -27,10 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
-/*
- * Esta clase implementa metodos para acceder a la base de datos 
- * de MySql de miniIMDB.
- */
 public class AnuncioPersistencia {
 
 	// Variables para conectarse a la base de datos
@@ -39,7 +23,7 @@ public class AnuncioPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://***:3306/wallapet";
+	private final String DRIVER = "jdbc:mysql://****/wallapet";
 	private final String USERNAME = "**";
 	private final String PASSWORD = "**";
 
@@ -73,7 +57,8 @@ public class AnuncioPersistencia {
 		
 		// Insertar en la base de datos.
 		stmt.executeUpdate("INSERT INTO anuncio"
-				+ "(email,estado,descripcion,tipoIntercambio,especie,precio,rutaImagen,titulo)"
+				+ "(email,estado,descripcion,tipoIntercambio,especie,precio," +
+				"rutaImagen,titulo)"
 				+ " VALUES "
 				+ "('" + a.getEmail() + "','"
 				+ a.getEstado() + "','"
@@ -239,7 +224,8 @@ public class AnuncioPersistencia {
 	 *       devuelve true. En caso de que no pueda actualizarse devuelve false.
 	 */
 	public boolean updateAnuncio(int idAnuncio,String especie,
-		String descripcion, String tipoIntercambio,String titulo, double precio, String ruta){
+		String descripcion, String tipoIntercambio,String titulo, double precio,
+								 String ruta){
 
 		// Crear conexion
 		try {
@@ -285,13 +271,21 @@ public class AnuncioPersistencia {
 		}
 	}
 
+	/**
+	 * Pre:  Cierto
+	 * Post: Cierra el anuncio de la bd con id igual a idAnuncio.
+	 *       En caso de no poder cerrarlo lanza una excepcion.
+	 */
 	public void cerrarAnuncio(int idAnuncio) throws SQLException{
 		// Conexiones con la base de datos.
 		Connection connection = DriverManager.getConnection(db_driver,
 				db_username, db_password);
 
 		Statement stmt = connection.createStatement();
-		String sql = "UPDATE anuncio SET estado = 'Cerrado' WHERE idAnuncio=" + idAnuncio;
+		String sql = "UPDATE anuncio " +
+					 "SET estado = 'Cerrado' " +
+					 "WHERE idAnuncio=" +
+				idAnuncio;
 
 		stmt.executeUpdate(sql);
 
@@ -319,8 +313,9 @@ public class AnuncioPersistencia {
 			// Comprobar si el anuncio existe en la base de datos.
 			Anuncio anuncio = getAnuncio(idAnuncio);
 			if(anuncio != null){
-				int numModificadas= stmt.executeUpdate("DELETE FROM anuncio"
-						+ " WHERE idAnuncio="+idAnuncio+";");
+				int numModificadas=
+						stmt.executeUpdate("DELETE FROM anuncio"
+								         + " WHERE idAnuncio="+idAnuncio+";");
 				
 				// En caso de eliminacion correcta devuelve true.
 				stmt.close();
