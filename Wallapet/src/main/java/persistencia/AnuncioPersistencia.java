@@ -39,9 +39,9 @@ public class AnuncioPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://192.168.56.32:3306/wallapet";
-	private final String USERNAME = "root";
-	private final String PASSWORD = "basesdepatos";
+	private final String DRIVER = "jdbc:mysql://***:3306/wallapet";
+	private final String USERNAME = "**";
+	private final String PASSWORD = "**";
 
 	// Constructor
 	public AnuncioPersistencia() {
