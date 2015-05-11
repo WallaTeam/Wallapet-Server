@@ -50,6 +50,72 @@ public class CuentaPersistencia {
 
 
 	/**
+	 * Si esta bien logueado devuelve objeto Cuenta.
+	 * Si no, devuelve null.
+	 * @return
+	 * @throws SQLException
+	 */
+	public Cuenta obtenerCuenta(int idAnuncio) throws SQLException{
+
+		Connection connection = DriverManager.getConnection(db_driver,
+				db_username, db_password);
+		Statement stmt = connection.createStatement();
+		// Ejecutamos consulta.
+		ResultSet rs = stmt
+				.executeQuery("SELECT * " +
+						"FROM anuncio " +
+						"WHERE idAnuncio=\"" +idAnuncio+ "\"");
+
+
+		if(rs.next()){
+			String email = rs.getString("email");
+			System.out.println(email);
+
+
+			if(email != null){
+				rs = stmt.executeQuery("SELECT * " +
+						"FROM cuenta " +
+						"WHERE email=\"" +email+ "\"");
+				rs.next();
+				System.out.println("pruebasss");
+				String DNI = rs.getString("DNI");
+				String apellidos = rs.getString("apellidos");
+				String nombre = rs.getString("nombre");
+				String direccion = rs.getString("direccion");
+				int telefono = rs.getInt("telefono");
+				String usuario = rs.getString("usuario");
+
+				Cuenta c = new Cuenta();
+				c.setDNI(DNI);
+				c.setApellido(apellidos);
+				c.setNombre(nombre);
+				c.setDireccion(direccion);
+				c.setEmail(email);
+				c.setTelefono(telefono);
+				c.setUsuario(usuario);
+				return c;
+
+
+			}
+			else{
+				stmt.close();
+				connection.close();
+				return null;
+			}
+
+		}
+		else{
+			//No hay usuario con dicho mail
+			stmt.close();
+			connection.close();
+			return null;
+		}
+
+
+
+	}
+
+	/**
 	 * Pre: email!=null.
 	 * Borra una cuenta y todos los anuncios que ha creado dicha cuenta.
 	 * En caso de error lanza una excepcion.
