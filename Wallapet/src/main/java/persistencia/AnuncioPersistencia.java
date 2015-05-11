@@ -23,7 +23,7 @@ public class AnuncioPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://wallapet:3306/wallapet";
+	private final String DRIVER = "jdbc:mysql://wallapet.com:3306/wallapet";
 	private final String USERNAME = "piraces";
 	private final String PASSWORD = "dLR2sPZR0A";
 
@@ -131,7 +131,7 @@ public class AnuncioPersistencia {
 	/**
 	 * Pre: Cierto
 	 * Post: Devuelve una lista de anuncios segun las opciones tipo de anuncio,
-	 *       especie o palabras clave, que no estï¿½n cerrados.
+	 *       especie o palabras clave, que no estén cerrados.
 	 */
 	public List<Anuncio> searchAnuncios(String tipoAnuncio, String especie,
 			String palabrasClave) throws SQLException {
