@@ -138,15 +138,15 @@ public class CuentaPersistencia {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Cuenta loginCuenta(DatosLogin dl) throws SQLException{
+	public Cuenta loginCuenta(DatosLogin dl) throws SQLException {
 
 		Connection connection = DriverManager.getConnection(db_driver,
 				db_username, db_password);
 		Statement stmt = connection.createStatement();
 		// Ejecutamos consulta.
 		ResultSet rs = stmt
-				.executeQuery("SELECT * FROM cuenta WHERE email=\"" +dl.getMail()+ "\"");
-		if(rs.next()){
+				.executeQuery("SELECT * FROM cuenta WHERE email=\"" + dl.getMail() + "\"");
+		if (rs.next()) {
 			String DNI = rs.getString("DNI");
 			String apellidos = rs.getString("apellidos");
 			String nombre = rs.getString("nombre");
@@ -155,8 +155,8 @@ public class CuentaPersistencia {
 			String usuario = rs.getString("usuario");
 			String retrievedPass = rs.getString("contrasegna");
 
-			if(dl.getPass().equals(retrievedPass)){
-			Cuenta c = new Cuenta();
+			if (dl.getPass().equals(retrievedPass)) {
+				Cuenta c = new Cuenta();
 				c.setDNI(DNI);
 				c.setApellido(apellidos);
 				c.setNombre(nombre);
@@ -166,16 +166,15 @@ public class CuentaPersistencia {
 				c.setUsuario(usuario);
 				c.setContrasegna(retrievedPass);
 				return c;
-			}
-			else{
+			} else {
 				return null;
 			}
 
-		}
-		else{
+		} else {
 			//No hay usuario con dicho mail
 			return null;
 		}
+	}
 
 		/**
 		 * Si esta bien logueado devuelve objeto Cuenta.
@@ -245,5 +244,5 @@ public class CuentaPersistencia {
 
 
 
-	}
+
 }
