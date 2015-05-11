@@ -4,21 +4,9 @@
  * Autor: Luis Pellicer.
  * Fecha 3-4-2015
  * Descripcion: Este fichero implementa la comunicacion 
- *              con la base de datos de la aplicacion.
+ *              con la base de datos de la aplicacion en lo que respecta
+ *              a Anuncio.
  * Copyright (C) 2015 Hyena Technologies
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package persistencia;
 
@@ -27,10 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
-/*
- * Esta clase implementa metodos para acceder a la base de datos 
- * de MySql de miniIMDB.
- */
 public class AnuncioPersistencia {
 
 	// Variables para conectarse a la base de datos
@@ -39,9 +23,9 @@ public class AnuncioPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://******:3306/wallapet";
-	private final String USERNAME = "*";
-	private final String PASSWORD = "*";
+	private final String DRIVER = "jdbc:mysql://192.168.56.32:3306/wallapet";
+	private final String USERNAME = "root";
+	private final String PASSWORD = "basesdepatos";
 
 	// Constructor
 	public AnuncioPersistencia() {
@@ -73,7 +57,8 @@ public class AnuncioPersistencia {
 		
 		// Insertar en la base de datos.
 		stmt.executeUpdate("INSERT INTO anuncio"
-				+ "(email,estado,descripcion,tipoIntercambio,especie,precio,rutaImagen,titulo)"
+				+ "(email,estado,descripcion,tipoIntercambio,especie,precio," +
+				"rutaImagen,titulo)"
 				+ " VALUES "
 				+ "('" + a.getEmail() + "','"
 				+ a.getEstado() + "','"
@@ -146,7 +131,7 @@ public class AnuncioPersistencia {
 	/**
 	 * Pre: Cierto
 	 * Post: Devuelve una lista de anuncios segun las opciones tipo de anuncio,
-	 *       especie o palabras clave.
+	 *       especie o palabras clave, que no estén cerrados.
 	 */
 	public List<Anuncio> searchAnuncios(String tipoAnuncio, String especie,
 			String palabrasClave) throws SQLException {
@@ -174,7 +159,8 @@ public class AnuncioPersistencia {
 				
 				// Excepcion.
 			}
-			
+
+
 			// Formar busqueda a partir de las palabras claves.
 			for(int i = 0; i< terminos.length; i++){
 				opciones += " titulo LIKE \'%" + terminos[i] + "%\' OR" ;
@@ -187,8 +173,8 @@ public class AnuncioPersistencia {
 				
 			}
 		}
-		opciones += " 1 = 1 ";
-		System.out.println("SELECT * FROM anuncio WHERE " + opciones);
+		opciones += " estado='Abierto'";
+		System.out.println("SELECT * FROM anuncio WHERE"+ opciones);
 		
 		// Ejecutar consulta.
 		ResultSet rs = stmt.executeQuery("SELECT * FROM anuncio WHERE "
@@ -227,6 +213,8 @@ public class AnuncioPersistencia {
 			anuncios.add(a);
 
 		}
+		stmt.close();
+		connection.close();
 		return anuncios;
 	}
 	
@@ -235,8 +223,9 @@ public class AnuncioPersistencia {
 	 * Post: Actualiza el anuncio de la bd con el id igual a idAnuncio y 
 	 *       devuelve true. En caso de que no pueda actualizarse devuelve false.
 	 */
-	public boolean updateAnuncio(int idAnuncio,String email,String estado, String especie,
-		String descripcion, String tipoIntercambio,String titulo, double precio, String ruta){
+	public boolean updateAnuncio(int idAnuncio,String especie,
+		String descripcion, String tipoIntercambio,String titulo, double precio,
+								 String ruta){
 
 		// Crear conexion
 		try {
@@ -252,7 +241,6 @@ public class AnuncioPersistencia {
 			Anuncio anuncio = getAnuncio(idAnuncio);
 			if(anuncio != null){
 				stmt.executeUpdate("UPDATE anuncio SET "
-						+ "email=" + "'" + email + "',estado=" + "'" + estado + "',"
 						+ "tipoIntercambio="+"'"+tipoIntercambio + "',"
 						+ "especie=" + "'" + especie+"'," 
 						+ "precio=" + precio + ",titulo=" + "'" + titulo + "',"
@@ -261,13 +249,20 @@ public class AnuncioPersistencia {
 						+ " WHERE idAnuncio=" + idAnuncio + ";");
 				
 				// En caso de modificacion correcta devuelve true.
+				stmt.close();
+				connection.close();
 				return true;
 			}
 			
 			// En caso de error en la modificacion devuelve false.
 			else{
+				stmt.close();
+				connection.close();
 				return false;
 			}
+
+
+
 			
 		} // En caso de error devuelve false. 
 		catch (SQLException e) {
@@ -275,7 +270,28 @@ public class AnuncioPersistencia {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Pre:  Cierto
+	 * Post: Cierra el anuncio de la bd con id igual a idAnuncio.
+	 *       En caso de no poder cerrarlo lanza una excepcion.
+	 */
+	public void cerrarAnuncio(int idAnuncio) throws SQLException{
+		// Conexiones con la base de datos.
+		Connection connection = DriverManager.getConnection(db_driver,
+				db_username, db_password);
+
+		Statement stmt = connection.createStatement();
+		String sql = "UPDATE anuncio " +
+					 "SET estado = 'Cerrado' " +
+					 "WHERE idAnuncio=" +
+				idAnuncio;
+
+		stmt.executeUpdate(sql);
+
+		stmt.close();
+		connection.close();
+	}
 	/**
 	 * Pre:  Cierto 
 	 * Post: Elimina el anuncio de la bd con id igual a idAnuncio y devuelve true.
@@ -297,18 +313,21 @@ public class AnuncioPersistencia {
 			// Comprobar si el anuncio existe en la base de datos.
 			Anuncio anuncio = getAnuncio(idAnuncio);
 			if(anuncio != null){
-				int numModificadas= stmt.executeUpdate("DELETE FROM anuncio"
-						+ " WHERE idAnuncio="+idAnuncio+";");
+				int numModificadas=
+						stmt.executeUpdate("DELETE FROM anuncio"
+								         + " WHERE idAnuncio="+idAnuncio+";");
 				
 				// En caso de eliminacion correcta devuelve true.
-				if(numModificadas == 1){
-					return true;
-				}
-				else{return false;}
+				stmt.close();
+				connection.close();
+				return numModificadas==1;
+
 			}
 			
 			// En caso de error en la eliminacion devuelve false.
 			else{
+				stmt.close();
+				connection.close();
 				return false;
 			}	
 		} 

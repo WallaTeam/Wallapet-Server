@@ -7,18 +7,6 @@
  *              de procesar peticiones Post para modificar anuncios.
  * Copyright (C) 2015 Hyena Technologies
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package servicios;
 
@@ -35,17 +23,17 @@ import persistencia.Anuncio;
 import persistencia.AnuncioPersistencia;
 import persistencia.Cuenta;
 
-/**
- * Servlet implementation class ActualizarAnuncio
- */
+
 @WebServlet("/ActualizarAnuncio")
 public class ActualizarAnuncio extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * El GET no debe hacer nada.
+	 * Pre: parametros !=null
+	 * Post: El GET no debe hacer nada.
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
 		out.println("ERROR: USA POST PARA ACTUALIZAR UN ANUNCIO");
 		response.setStatus(500);
@@ -60,16 +48,19 @@ public class ActualizarAnuncio extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+
 		PrintWriter out = response.getWriter();
 
 		HttpSession s = request.getSession();
 		Cuenta logueado = (Cuenta) s.getAttribute("usuario");
+
 		if(logueado==null){
 			out.println("Usuario no logueado");
 			response.setStatus(405);
 			return;
 		}
 		String anuncioJson = request.getParameter("anuncio");
+		System.out.println("Peticion de actualizar sobre " + anuncioJson);
 		try{
 			Anuncio received = Anuncio.fromJson(anuncioJson);
 			AnuncioPersistencia persistencia = new AnuncioPersistencia();
@@ -77,7 +68,7 @@ public class ActualizarAnuncio extends HttpServlet {
 			// Comprobar errores.
 			if(persistencia.getAnuncio(received.getIdAnuncio()) != null){
 				if(persistencia.updateAnuncio(received.getIdAnuncio(),
-						received.getEmail(), received.getEstado(),
+
 						received.getEspecie(), received.getDescripcion(),
 						received.getTipoIntercambio(), received.getTitulo(),
 						received.getPrecio(), received.getRutaImagen())){

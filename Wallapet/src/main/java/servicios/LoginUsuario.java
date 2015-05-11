@@ -1,3 +1,12 @@
+/*
+ * Nombre: LoginUsuario.java
+ * Version: 0.1
+ * Autor: Ismael Rodriguez.
+ * Fecha 5-5-2015
+ * Descripcion: Este fichero implementa el servlet del servidor que se encarga
+ *              de loguear a un usuario.
+ * Copyright (C) 2015 Hyena Technologies
+ */
 package servicios;
 
 import persistencia.Cuenta;
@@ -15,15 +24,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Calendar;
 
-/**
- * Created by ismaro3 on 05/05/2015.
- */
+
 @WebServlet("/loginUsuario.do")
 public class LoginUsuario extends HttpServlet {
+
     /**
-     * El GET no debe hacer nada.
+     * Pre: cierto
+     * Post: El GET no debe hacer nada.
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         PrintWriter out = response.getWriter();
         out.println("ERROR: USA POST PARA LOGUEAR UN USUARIO");
         response.setStatus(500);
@@ -37,9 +47,8 @@ public class LoginUsuario extends HttpServlet {
      *      Ver documentacion para mas detalle.
      * Post: loguea un usuario o devuelve error.
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
 
 
@@ -64,7 +73,8 @@ public class LoginUsuario extends HttpServlet {
 
             }
             else{
-                out.println("Error de autentificación: usuario o contraseña incorrectos");
+                out.println("Error de autentificación: usuario o contraseña " +
+                        "incorrectos");
                 response.setStatus(403);
             }
 

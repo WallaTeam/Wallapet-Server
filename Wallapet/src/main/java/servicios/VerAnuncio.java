@@ -6,19 +6,6 @@
  * Descripcion: Este fichero implementa el servlet del servidor que se encarga
  *              de procesar peticiones Post para buscar un anuncio.
  * Copyright (C) 2015 Hyena Technologies
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package servicios;
 
@@ -35,9 +22,6 @@ import persistencia.Anuncio;
 import persistencia.AnuncioPersistencia;
 import persistencia.Cuenta;
 
-/**
- * Servlet implementation class VerAnuncio
- */
 @WebServlet("/verAnuncio.do")
 public class VerAnuncio extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -46,7 +30,7 @@ public class VerAnuncio extends HttpServlet {
 	 * Pre: VerAnuncio funciona con GET.
 	 *      GET /verAnuncio.do?id=ID_ANUNCIO
 	 *      Ver documentacion para mas detalle.
-	 * Post: 
+	 * Post: Devuelve los datos del anuncio pedidos en JSON, o error si procede.
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
