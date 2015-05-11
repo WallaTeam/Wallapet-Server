@@ -17,9 +17,9 @@ public class CompraVentaPersistencia {
     private String db_password;
 
     // Datos del servidor
-    private final String DRIVER = "jdbc:mysql://192.168.56.32:3306/wallapet";
-    private final String USERNAME = "root";
-    private final String PASSWORD = "basesdepatos";
+    private final String DRIVER = "jdbc:mysql://wallapet:3306/wallapet";
+    private final String USERNAME = "piraces";
+    private final String PASSWORD = "dLR2sPZR0A";
 
     // Constructor
     public CompraVentaPersistencia() {
