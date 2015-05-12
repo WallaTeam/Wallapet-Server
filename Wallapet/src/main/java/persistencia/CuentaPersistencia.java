@@ -39,7 +39,7 @@ public class CuentaPersistencia {
 	// Datos del servidor
 	private final String DRIVER = "jdbc:mysql://wallapet:3306/wallapet";
 	private final String USERNAME = "piraces";
-	private final String PASSWORD = "dLR2sPZR0A";
+	private final String PASSWORD = "";
 	
 	/**
 	 * Pre: Cierto
