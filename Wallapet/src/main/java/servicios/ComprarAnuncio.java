@@ -1,8 +1,16 @@
+/*
+ * Nombre: ComprarAnuncio.java
+ * Version: 1.0
+ * Autor: Sergio Soro.
+ * Fecha 8-5-2015
+ * Descripcion: Este fichero implementa el servlet del servidor que se encarga
+ *              de procesar peticiones Post para Comprar/Adoptar Anuncios.
+ * Copyright (C) 2015 Hyena Technologies
+ */
+
 package servicios;
 
-import com.mysql.jdbc.StringUtils;
 import persistencia.*;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,13 +22,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-/**
- * Created by teruyi on 8/05/15.
- */
 @WebServlet("/datosUsuario.do")
 public class ComprarAnuncio extends HttpServlet {
 
-
+    /**
+     * Pre: ComprarAnuncio funciona con GET.
+     *      GET /ComprarAnuncio.do?id = 'id del anuncio solicitado'
+     *      usuario = 'usuario que solicita la compra/ adopcion del anuncio'
+     *      Ver documentacion para mas detalle.
+     * Post: Intercambia los datos personales entre vendedor y comprador mediante el
+     *       envio de dos email con un pdf adjunto con los datos del anuncio y de la
+     *       correspondiente parte interesada en la operacion.
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -94,12 +107,15 @@ public class ComprarAnuncio extends HttpServlet {
 
                     EmailNotifier mail = new EmailNotifier(vendedor.getEmail());
                     mail.sendNotification("Wallapet", "Se adjunta la información" +
-                            " de la petición", logueado.getEmail() + ".pdf");
+                            " de la petición", "/var/lib/tomcat7/webapps/Wallapet/"
+                            + logueado.getEmail() + ".pdf");
                     mail = new EmailNotifier(logueado.getEmail());
                     mail.sendNotification("Wallapet", "Se adjunta la información" +
-                            " de la petición", vendedor.getEmail() + ".pdf");
+                            " de la petición", "/var/lib/tomcat7/webapps/Wallapet/"
+                            + vendedor.getEmail() + ".pdf");
 
-                    File fichero = new File(vendedor.getEmail() + ".pdf");
+                    File fichero = new File("/var/lib/tomcat7/webapps/Wallapet/"
+                            + vendedor.getEmail() + ".pdf");
 
                     if (fichero.delete()) {
                         System.out.println("El fichero ha sido borrado " +
@@ -108,7 +124,8 @@ public class ComprarAnuncio extends HttpServlet {
                         System.out.println("El fichero no puede ser borrado");
                     }
 
-                    fichero = new File(logueado.getEmail() + ".pdf");
+                    fichero = new File("/var/lib/tomcat7/webapps/Wallapet/"
+                            + logueado.getEmail() + ".pdf");
 
                     if (fichero.delete()) {
                         System.out.println("El fichero ha sido borrado " +
@@ -131,8 +148,6 @@ public class ComprarAnuncio extends HttpServlet {
                     response.setStatus(200);
 
                 }
-
-
             }
         }
         catch (Exception ex) {

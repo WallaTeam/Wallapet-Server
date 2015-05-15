@@ -131,7 +131,7 @@ public class AnuncioPersistencia {
 	/**
 	 * Pre: Cierto
 	 * Post: Devuelve una lista de anuncios segun las opciones tipo de anuncio,
-	 *       especie o palabras clave, que no estén cerrados.
+	 *       especie o palabras clave, que no estï¿½n cerrados.
 	 */
 	public List<Anuncio> searchAnuncios(String tipoAnuncio, String especie,
 			String palabrasClave) throws SQLException {

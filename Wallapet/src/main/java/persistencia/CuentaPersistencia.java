@@ -37,7 +37,7 @@ public class CuentaPersistencia {
 	private String db_password;
 	
 	// Datos del servidor
-	private final String DRIVER = "jdbc:mysql://wallapet:3306/wallapet";
+	private final String DRIVER = "jdbc:mysql://wallapet.com:3306/wallapet";
 	private final String USERNAME = "piraces";
 	private final String PASSWORD = "";
 	
@@ -191,7 +191,7 @@ public class CuentaPersistencia {
 			ResultSet rs = stmt
 					.executeQuery("SELECT * " +
 							"FROM anuncio " +
-							"WHERE idAnuncio=\"" +idAnuncio+ "\"");
+							"WHERE idAnuncio=\"" + idAnuncio+ "\"");
 
 
 			if(rs.next()){

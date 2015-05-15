@@ -1,3 +1,13 @@
+/*
+ * Nombre: EmailNotifier.java
+ * Version: 1.0
+ * Autor: Sergio Soro.
+ * Fecha 7-5-2015
+ * Descripcion: Este fichero implementa la clase que se encarga de crear y enviar
+ *              un correo electronico con un documento adjunto.
+ * Copyright (C) 2015 Hyena Technologies
+ */
+
 package servicios;
 
 import javax.activation.DataHandler;
@@ -9,13 +19,12 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by teruyi on 07/05/15.
- */
 public class EmailNotifier{
-    private static final Logger logger = Logger.getLogger(EmailNotifier.class.getName());
+
+    private static final Logger logger =
+            Logger.getLogger(EmailNotifier.class.getName());
     private final String USERNAME = "wallapet.sa@gmail.com";
-    private final String PASSWORD = "basesdepatos";
+    private final String PASSWORD = "";
     private final Properties props = new Properties() {{
         put("mail.smtp.auth", "true");
         put("mail.smtp.starttls.enable", "true");
@@ -24,11 +33,19 @@ public class EmailNotifier{
     }};
     private String destEmail;
 
+    /**
+     * Pre: destEmail contiene un correo valido.
+     * Post:
+     */
     public EmailNotifier(String destEmail) {
         this.destEmail = destEmail;
     }
 
 
+    /**
+     * Pre: ruta es un path valido.
+     * Post: Crea un anuncio y lo envia a destEmail.
+     */
     public void sendNotification(String title, String description, String ruta) {
         Session session = Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -54,7 +71,7 @@ public class EmailNotifier{
             // Crea el cuerpo del mensaje
             BodyPart messageBodyPart = new MimeBodyPart();
 
-            // Añade el texto al cuerpo del mensaje
+            // add el texto al cuerpo del mensaje
             messageBodyPart.setText(description);
 
             // crea un mensaje multiparte
@@ -63,14 +80,14 @@ public class EmailNotifier{
             // Le añade la parte de texto al mensaje
             multipart.addBodyPart(messageBodyPart);
 
-            // añadimos el pdf
+            // add el pdf
             messageBodyPart = new MimeBodyPart();
             DataSource source = new FileDataSource(ruta);
             messageBodyPart.setDataHandler(new DataHandler(source));
             messageBodyPart.setFileName(ruta);
             multipart.addBodyPart(messageBodyPart);
 
-            // Añade al mensaje las partes
+            // add al mensaje las partes
             message.setContent(multipart);
 
             // Envia el mensaje

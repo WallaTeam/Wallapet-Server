@@ -1,13 +1,25 @@
+/*
+ * Nombre: GeneradorPdf.java
+ * Version: 2.0
+ * Autor: Sergio Soro.
+ * Fecha 14-5-2015
+ * Descripcion: Este fichero implementa la clase que crea los pdf de intercambio
+ * entre los usuarios cuando se produce una compra/venta.
+ * Copyright (C) 2015 Hyena Technologies
+ */
+
 package servicios;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
@@ -18,6 +30,8 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
 public class GeneradorPdf {
 
+	private static final Logger logger =
+			Logger.getLogger(GeneradorPdf.class.getName());
 	private String nombreAnuncio;
 	private String tipoAnuncio;
 	private String descripcionAnuncio;
@@ -32,6 +46,10 @@ public class GeneradorPdf {
 	private String rutaND;
 	private String rutaCabecera;
 
+	/**
+	 * Pre: parametro != null.
+	 * Post: Inicializa los datos con los que se rellenara el pdf.
+	 */
 	public GeneradorPdf(String nombreAnuncio, String tipoAnuncio,
 			String descripcionAnuncio, double precioAnuncio,
 			String especieAnuncio, String nombre,
@@ -50,15 +68,18 @@ public class GeneradorPdf {
 		this.ruta = ruta;
 		this.rutaCabecera = rutaCabecera;
 		this.rutaND = rutaND;
-
 	}
 
-
-
+	/**
+	 * Pre: Cierto.
+	 * Post: Crea un documento pdf con los datos del anuncio y los del comprador o
+	 * 		 los del vendedor.Guarda el pdf para poder enviarlo posteriormente.
+	 */
 	public PDDocument getPdf() {
 		// Create a document and add a page to it
 		try {
 			if (ruta.equals("null") || ruta == ""){
+				logger.log(Level.INFO, "Comienzo creación pdf sin fotos");
 				PDDocument document = new PDDocument();
 				PDPage page = new PDPage();
 				page.setMediaBox(page.PAGE_SIZE_A4);
@@ -73,8 +94,6 @@ public class GeneradorPdf {
 				BufferedImage awtImage2;
 				awtImage2 = resize(awtImage, 100, 100);
 				PDXObjectImage img = new PDPixelMap(document, awtImage2);
-				File outputfile = new File("image.jpg");
-				ImageIO.write(awtImage2, "jpg", outputfile);
 
 				System.out.println(rutaND);
 
@@ -83,8 +102,6 @@ public class GeneradorPdf {
 				BufferedImage awtImage5;
 				awtImage5 = resize(image,240,170);
 				PDXObjectImage img2 = new PDPixelMap(document, awtImage5);
-				File outputfile2 = new File("image2.jpg");
-				ImageIO.write(awtImage5, "jpg", outputfile2);
 
 
 
@@ -108,11 +125,13 @@ public class GeneradorPdf {
 
 				// Save the results and ensure that the document is properly closed
 
-				document.save(email + ".pdf");
+				document.save("/var/lib/tomcat7/webapps/Wallapet/" + email + ".pdf");
 				document.close();
+				logger.log(Level.INFO, "Termina pdf");
 				return document;
 			}
 			else {
+				logger.log(Level.INFO, "Comienzo creación pdf con fotos");
 				PDDocument document = new PDDocument();
 				PDPage page = new PDPage();
 				page.setMediaBox(page.PAGE_SIZE_A4);
@@ -124,31 +143,30 @@ public class GeneradorPdf {
 				// Image to use
 				// PDXObjectImage img = new PDJpeg(document, new FileInputStream(
 				// new File("datos/wallapet.png")));
-
+				logger.log(Level.INFO, "rutaCabecera" + rutaCabecera);
 				BufferedImage awtImage = ImageIO
 						.read(new File(rutaCabecera));
 				// Resize image
 				BufferedImage awtImage2;
 				awtImage2 = resize(awtImage, 100, 100);
 				PDXObjectImage img = new PDPixelMap(document, awtImage2);
-				File outputfile = new File("image.jpg");
-				ImageIO.write(awtImage2, "jpg", outputfile);
 
 
 
+
+				logger.log(Level.INFO, "Primera imagen añadida con fotos");
 
 
 				// Imagen anuncio
+				logger.log(Level.INFO, "rutaImagen" + ruta);
 				URL url = new URL(ruta);
 				BufferedImage image = ImageIO.read(url);
 				BufferedImage awtImage5;
 				awtImage5 = resize(image,240,170);
 				PDXObjectImage img2 = new PDPixelMap(document, awtImage5);
-				File outputfile2 = new File("image2.jpg");
-				ImageIO.write(awtImage5, "jpg", outputfile2);
 
 
-
+				logger.log(Level.INFO, "Segunda imagen añadida con fotos");
 
 				// Create a new font object selecting one of the PDF base fonts
 				PDFont font = PDType1Font.HELVETICA_BOLD;
@@ -169,8 +187,9 @@ public class GeneradorPdf {
 
 				// Save the results and ensure that the document is properly closed
 
-				document.save(email + ".pdf");
+				document.save("/var/lib/tomcat7/webapps/Wallapet/" + email + ".pdf");
 				document.close();
+				logger.log(Level.INFO, "Cerramos documento");
 				return document;
 
 			}
@@ -183,6 +202,10 @@ public class GeneradorPdf {
 	}
 
 
+	/**
+	 * Pre: img != null; newW != null; newH != null.
+	 * Post: Modifica el tamaño de la imagen img por el que se indica en newW y newH
+	 */
 	public static BufferedImage resize(BufferedImage img, int newW, int newH) {
 		Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
 		BufferedImage dimg = new BufferedImage(newW, newH,
@@ -196,7 +219,10 @@ public class GeneradorPdf {
 	}
 
 
-
+	/**
+	 * Pre: page != null; contentStream != null.
+	 * Post: Modifica el contenido de page mediante contentStream para crear el pdf.
+	 */
 	private void drawTable(PDPage page, PDPageContentStream contentStream) {
 		try {
 

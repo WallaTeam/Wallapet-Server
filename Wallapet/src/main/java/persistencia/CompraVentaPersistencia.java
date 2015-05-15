@@ -1,14 +1,21 @@
+/**
+ * Nombre:  CompraVentaPersistencia.java
+ * Version: 1.0
+ * Autor:  Sergio Soro
+ * Fecha: 5-5-2015
+ * Descripcion: Este fichero implementa la comunicacion
+ *              con la base de datos de la aplicacion en lo que respecta
+ *              a Compra venta de anuncios.
+ * Copyright (C) 2015 Hyena Technologies
+ */
+
 package persistencia;
 
 import java.sql.*;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by teruyi on 9/05/15.
- */
 public class CompraVentaPersistencia {
 
     // Variables para conectarse a la base de datos
@@ -17,7 +24,7 @@ public class CompraVentaPersistencia {
     private String db_password;
 
     // Datos del servidor
-    private final String DRIVER = "jdbc:mysql://wallapet:3306/wallapet";
+    private final String DRIVER = "jdbc:mysql://wallapet.com:3306/wallapet";
     private final String USERNAME = "piraces";
     private final String PASSWORD = "";
 
@@ -39,8 +46,8 @@ public class CompraVentaPersistencia {
 
     /**
      * Pre: a != null
-     * Post: Inserta el anuncio a en la base de datos de la aplicacion. En caso
-     *       de errores lanza una excepcion SQL.
+     * Post: Inserta el IDanuncio, email del comprador y la fecha en la base de datos
+     *       de la aplicacion. En caso de errores lanza una excepcion SQL.
      */
     public void crearCompra(int id, String email) throws SQLException {
 
